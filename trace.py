@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Copyright (c) 2016 Aishwarya Ganesan and Ramnatthan Alagappan. 
 # All Rights Reserved.
 # 
@@ -75,7 +75,7 @@ for i in range(0, machine_count):
 
 
 for i in range(0, machine_count):
-	print fuse_command_trace%(data_dirs[i], data_dir_mount_points[i], trace_files[i])
+	print (fuse_command_trace%(data_dirs[i], data_dir_mount_points[i], trace_files[i]))
 	os.system(fuse_command_trace%(data_dirs[i], data_dir_mount_points[i], trace_files[i]))
 
 os.system('sleep 1')
@@ -123,4 +123,4 @@ for trace_file in trace_files:
 		with open(trace_file, 'w') as f:
 			f.write(to_write_final)
 
-print 'Tracing completed...'
+print ('Tracing completed...')

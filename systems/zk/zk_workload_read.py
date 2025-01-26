@@ -1,4 +1,4 @@
-#!/usr/bin/env  python
+#!/usr/bin/env  python3
 
 import sys
 import os
@@ -11,16 +11,16 @@ from kazoo.client import KazooRetry
 def invoke_cmd(cmd):
 	p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	out, err = p.communicate()
-	return (out, err)
+	return (out.decode('utf-8'), err.decode('utf-8'))
 
 #ZooKeeper-related Config
 logging.basicConfig()
-host_list = ['127.0.0.2', '127.0.0.3', '127.0.0.4']
+host_list = ['127.0.0.1', '127.0.0.1', '127.0.0.1']
 port_list = [2182, 2183, 2184]
-config_info = '''tickTime=2000\ndataDir=%s\nclientPort=%s\ninitLimit=5\nsyncLimit=2\nserver.1=127.0.0.2:2888:3888\nserver.2=127.0.0.3:2889:3889\nserver.3=127.0.0.4:2890:3890\npreAllocSize=40'''
+config_info = '''tickTime=2000\ndataDir=%s\nclientPort=%s\ninitLimit=5\nsyncLimit=2\nserver.1=127.0.0.1:2887:3887\nserver.2=127.0.0.1:2888:3888\nserver.3=127.0.0.1:2889:3889\npreAllocSize=40'''
 
 #ZooKeeper code home, log file names
-ZK_HOME = '~/zookeeper-3.4.12/'
+ZK_HOME = '/mnt/nvme2mount/zookeeper/'
 zoo_logfile_name = 'zookeeper.out'
 
 #Kill all Zookeeper Processes
@@ -67,7 +67,7 @@ time.sleep(3)
 
 out = ''
 err = ''
-present_value = 'a' * 8192 
+present_value = ('a' * 8192).encode('utf-8')
 
 
 # Get state of ZooKeeper nodes before reading data
@@ -107,14 +107,14 @@ for server_index in range(1, 4):
 		zk.start()
 		returned, stat = zk.get("/zk_test")
 		zk.stop()
-		returned = returned.strip().replace('\n', '')
-		out += 'Successful get at server ' + str(server_index - 1) + ' Proper:' + str(returned == present_value)  + '\n'
+		returned = returned.strip().replace(b'\n', b'')
+		out += f'Successful get at server{server_index-1}: Match={returned == present_value}\n'
 	except Exception as e:
 		err += 'Could not get at server ' + str(server_index - 1) + '\t:' + str(e) + '\n' 
 
 
-print out
-print err
+print (out)
+print (err)
 
 # Get state of ZooKeeper nodes after reading data
 if log_dir is not None:
@@ -154,8 +154,7 @@ time.sleep(3)
 os.system("pkill -f \'java.*zoo*\'")
 time.sleep(1)
 
-
-os.system("sudo chown -R $USER:$USER workload_dir*")
+os.system("chown -R $USER:$USER /home/nyerga/CORDS/systems/zk/workload_dir*")
 
 for i in [0, 1, 2]:
 	os.system('rm -rf ' + config_files[i])

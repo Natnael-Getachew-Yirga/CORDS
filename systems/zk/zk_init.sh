@@ -3,13 +3,13 @@
 # This script just initializes a cluster of ZooKeeper nodes with just one key value pair
 # Kill all ZooKeeper instances
 pkill -f 'java.*zoo*'
-ZK_HOME=$HOME'/zookeeper-3.4.12/'
+ZK_HOME='/mnt/nvme2mount/zookeeper/'
 CURR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 #Delete all the CORDS trace files
 #Delete ZooKeeper workload directories
 rm -rf cordslog*
-rm -rf trace*
+#rm -rf trace*
 rm -rf workload_dir*
 
 # Create workload directories for 3 nodes
@@ -43,4 +43,4 @@ $ZK_HOME"/bin/zkCli.sh" -server 127.0.0.2:2182 < script
 rm -rf script
 pkill -f 'java.*zoo*'
 ps aux | grep zoo
-rm -rf zookeeper.out
+#rm -rf zookeeper.out

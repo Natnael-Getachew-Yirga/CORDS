@@ -10,10 +10,10 @@ from kazoo.client import KazooRetry
 
 logging.basicConfig()
 
-host_list = ['127.0.0.2', '127.0.0.3', '127.0.0.4']
+host_list = ['127.0.0.1', '127.0.0.1', '127.0.0.1']
 port_list = [2182, 2183, 2184]
 
-config_info = '''tickTime=2000\ndataDir=%s\nclientPort=%s\ninitLimit=5\nsyncLimit=2\nserver.1=127.0.0.2:2888:3888\nserver.2=127.0.0.3:2889:3889\nserver.3=127.0.0.4:2890:3890'''
+config_info = '''tickTime=2000\ndataDir=%s\nclientPort=%s\ninitLimit=5\nsyncLimit=2\nserver.1=127.0.0.1:2887:3887\nserver.2=127.0.0.1:2888:3888\nserver.3=127.0.0.1:2889:3889'''
 ZK_HOME = '/mnt/data1/scratch/work/adsl-work/d2s/applications/zookeeper-3.4.8/'
 ZK_HOME_BIN = '/mnt/data1/scratch/work/adsl-work/d2s/applications/zookeeper-3.4.8/bin'
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
