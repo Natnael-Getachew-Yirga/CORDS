@@ -3,8 +3,9 @@
 # Initialize paths
 BK_DIR="/mnt/nvme2mount/bookkeeper"
 ZK_DIR="/mnt/nvme2mount/zookeeper"
-LEDGER_DIR="/home/nyerga/CORDS/systems/bk/l-m"
-JOURNAL_DIR="/home/nyerga/CORDS/systems/bk/j-m"
+
+LEDGER_DIR="/home/nyerga/CORDS/systems/bk/lm"
+JOURNAL_DIR="/home/nyerga/CORDS/systems/bk/jm"
 
 # Colors for output
 GREEN='\033[0;32m'
