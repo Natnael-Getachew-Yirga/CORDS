@@ -46,7 +46,7 @@ log_message() {
 
 log_message "${YELLOW}Phase 1: Environment Setup${RESET}"
 #rm -rf "$ZK_DIR/data" "$ZK_DIR/logs" "$BK_DIR/logs" "$LEDGER_DIR" "$JOURNAL_DIR"
-mkdir -p "$ZK_DIR/data" "$ZK_DIR/logs" "$BK_DIR/logs" "$JOURNAL_DIR" "$LEDGER_DIR"
+#mkdir -p "$ZK_DIR/data" "$ZK_DIR/logs" "$BK_DIR/logs" "$JOURNAL_DIR" "$LEDGER_DIR"
 
 $ZK_DIR/bin/zkServer.sh start
 sleep 10
