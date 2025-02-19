@@ -56,6 +56,20 @@ sleep 10
 
 log_message "${GREEN}Environment setup complete${RESET}"
 
+# =================================================================================
+# Write Entries and Capture Ledger ID
+# =================================================================================
+log_message "${YELLOW}Phase 2: Writing Test Entries${RESET}"
+java -jar $CLIENT_JAR 2 100 > $BK_LOG 2>&1
+
+# Extract ledger ID from logs
+LEDGER_ID=$(grep -oP 'Written entry to ledger \K\d+' $BK_LOG | tail -1)
+if [ -z "$LEDGER_ID" ]; then
+    log_message "${RED}Failed to extract ledger ID from logs${RESET}"
+    exit 1
+fi
+log_message "${GREEN}Ledger created with ID: $LEDGER_ID${RESET}"
+
 # Keep script running
 while true; do
     sleep 1

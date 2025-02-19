@@ -82,7 +82,7 @@ log_message "${GREEN}Environment setup complete${RESET}"
 # Write Entries and Capture Ledger ID
 # =================================================================================
 log_message "${YELLOW}Phase 2: Writing Test Entries${RESET}"
-java -jar $CLIENT_JAR write > $BK_LOG 2>&1
+java -jar $CLIENT_JAR 2 100 > $BK_LOG 2>&1
 
 # Extract ledger ID from logs
 LEDGER_ID=$(grep -oP 'Written entry to ledger \K\d+' $BK_LOG | tail -1)
@@ -145,6 +145,6 @@ log_message "Attempting to read ledgers 0 to 99"
 
 for i in {0..99}
 do
-    java -jar $CLIENT_JAR $i >> $BK_LOG 2>&1
+    java -jar $CLIENT_JAR read $i >> $BK_LOG 2>&1
 done
 log_message "${GREEN}Test complete. Full logs available in $BK_LOG${RESET}"

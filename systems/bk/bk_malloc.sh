@@ -10,6 +10,7 @@ JOURNAL_DIR="/home/nyerga/CORDS/systems/bk/jm.mp"
 CLIENT_JAR="/home/nyerga/CORDS/systems/bk/bookkeeper-workload/target/bookkeeper-workload-generator-1.0.jar"
 LOG_FILE="./bk_test.log"
 BK_LOG="./bookie.out"
+ZK_LOG="./zookeeper.out"
 
 # Colors
 GREEN='\033[0;32m'
@@ -42,15 +43,19 @@ log_message() {
 # =================================================================================
 # Initialize log files
 > $BK_LOG
+> $ZK_LOG
 > $LOG_FILE
 
 log_message "${YELLOW}Phase 1: Environment Setup${RESET}"
 rm -rf "$ZK_DIR/data" "$ZK_DIR/logs" "$BK_DIR/logs" "$LEDGER_DIR" "$JOURNAL_DIR"
 mkdir -p "$ZK_DIR/data" "$ZK_DIR/logs" "$BK_DIR/logs" "$JOURNAL_DIR" "$LEDGER_DIR"
 
-$ZK_DIR/bin/zkServer.sh start
+$ZK_DIR/bin/zkServer.sh start > $ZK_LOG 2>&1
 sleep 10
+
 $BK_DIR/bin/bookkeeper shell metaformat -nonInteractive -force
+# Export the malloc interceptor configuration
+
 $BK_DIR/bin/bookkeeper-daemon.sh start bookie 
 sleep 10
 
@@ -59,8 +64,13 @@ log_message "${GREEN}Environment setup complete${RESET}"
 # =================================================================================
 # Write Entries and Capture Ledger ID
 # =================================================================================
+# For multiple entries in single ledger (e.g., 100 entries)
+#java -jar client.jar 1 100
+# For single entry in multiple ledgers (e.g., 100 ledgers)
+#java -jar client.jar 2 100
+
 log_message "${YELLOW}Phase 2: Writing Test Entries${RESET}"
-java -jar $CLIENT_JAR 2 100 > $BK_LOG 2>&1
+java -jar $CLIENT_JAR 1 10000 > $BK_LOG 2>&1
 
 # Extract ledger ID from logs
 LEDGER_ID=$(grep -oP 'Written entry to ledger \K\d+' $BK_LOG | tail -1)
@@ -70,36 +80,16 @@ if [ -z "$LEDGER_ID" ]; then
 fi
 log_message "${GREEN}Ledger created with ID: $LEDGER_ID${RESET}"
 
-# =================================================================================
-# Targeted Ledger Corruption
-# =================================================================================
-log_message "${YELLOW}Phase 3: Targeted Ledger Corruption${RESET}"
-
-# Stop the bookie before corruption
-$BK_DIR/bin/bookkeeper-daemon.sh stop bookie
-sleep 5
-
-# Find the first (oldest) .txn file in the journal directory
-CURRENT_TXN_FILE=$(ls -tr "$JOURNAL_DIR/current/"*.txn 2>/dev/null | head -n 1)
-
-if [ -z "$CURRENT_TXN_FILE" ]; then
-    log_message "${RED}No .txn file found in $JOURNAL_DIR/current/${RESET}"
-    exit 1
-fi
-
-log_message "Corrupting journal file: $CURRENT_TXN_FILE"
-
-# Corrupt the entire file by overwriting it with random data
-dd if=/dev/urandom of="$CURRENT_TXN_FILE" bs=1M count=1 conv=notrunc
-
-log_message "${GREEN}Ledger corruption complete${RESET}"
 
 # =================================================================================
 # System Recovery Test
 # =================================================================================
 log_message "${YELLOW}Phase 4: Restarting Bookie${RESET}"
 $BK_DIR/bin/bookkeeper-daemon.sh start bookie
-sleep 120
+sleep 10 
+log_message "${YELLOW}Phase 2: Writing Test Entries${RESET}"
+java -jar $CLIENT_JAR 1 10000 > $BK_LOG 2>&1
 
+sleep 60
 
 log_message "${GREEN}Test complete. Full logs available in $BK_LOG${RESET}"
